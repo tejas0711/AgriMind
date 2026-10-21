@@ -20,6 +20,11 @@ OPEN_METEO_GEOCODING_URL = os.getenv("OPEN_METEO_GEOCODING_URL", "https://geocod
 DEFAULT_TIMEOUT_SECONDS = 4.0
 GEOCODING_TIMEOUT_SECONDS = 3.5
 
+HEADERS = {
+    "User-Agent": "AgriMind/1.0 (Smart Agriculture Advisor; https://github.com/tejas0711/AgriMind)",
+    "Accept": "application/json",
+}
+
 # 15-minute in-memory forecast cache to eliminate provider rate-limiting
 _FORECAST_CACHE: Dict[Tuple[float, float, int], Tuple[float, Dict[str, Any]]] = {}
 
@@ -196,7 +201,7 @@ async def geocode_location_info(name: str) -> Optional[Dict[str, Any]]:
 
     try:
         async with httpx.AsyncClient(timeout=GEOCODING_TIMEOUT_SECONDS) as client:
-            resp = await client.get(OPEN_METEO_GEOCODING_URL, params=params)
+            resp = await client.get(OPEN_METEO_GEOCODING_URL, params=params, headers=HEADERS)
             resp.raise_for_status()
             data = resp.json()
     except httpx.TimeoutException as exc:
@@ -304,7 +309,7 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
 
     try:
         async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT_SECONDS) as client:
-            resp = await client.get(OPEN_METEO_BASE_URL, params=params)
+            resp = await client.get(OPEN_METEO_BASE_URL, params=params, headers=HEADERS)
             resp.raise_for_status()
             data = resp.json()
     except httpx.TimeoutException as exc:
@@ -318,6 +323,16 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
             return _FORECAST_CACHE[cache_key][1]
         raise WeatherConnectionError(
             f"Could not connect to weather provider at {OPEN_METEO_BASE_URL}: {exc}"
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        if cache_key in _FORECAST_CACHE:
+            return _FORECAST_CACHE[cache_key][1]
+        if exc.response.status_code == 429:
+            raise WeatherServiceError(
+                "Open-Meteo rate limit reached on shared cloud IP. Application timing deferred to manual field observation."
+            ) from exc
+        raise WeatherServiceError(
+            f"Weather provider request failed with HTTP error: {exc}"
         ) from exc
     except httpx.HTTPError as exc:
         if cache_key in _FORECAST_CACHE:
