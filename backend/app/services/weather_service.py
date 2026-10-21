@@ -9,6 +9,7 @@ Open-Meteo attribution: "Weather data by Open-Meteo.com (CC BY 4.0)"
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime, timezone
 from typing import Optional, Tuple, Dict, Any, List
 import httpx
@@ -18,6 +19,10 @@ OPEN_METEO_GEOCODING_URL = os.getenv("OPEN_METEO_GEOCODING_URL", "https://geocod
 
 DEFAULT_TIMEOUT_SECONDS = 4.0
 GEOCODING_TIMEOUT_SECONDS = 3.5
+
+# 15-minute in-memory forecast cache to eliminate provider rate-limiting
+_FORECAST_CACHE: Dict[Tuple[float, float, int], Tuple[float, Dict[str, Any]]] = {}
+
 
 
 # ---------------------------------------------------------------------------
@@ -270,6 +275,13 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
         raise WeatherServiceError(f"Coordinates out of bounds: lat={latitude}, lon={longitude}")
 
     forecast_days = max(1, min(14, int(days)))
+    cache_key = (round(latitude, 2), round(longitude, 2), forecast_days)
+    now_ts = time.time()
+
+    if cache_key in _FORECAST_CACHE:
+        cached_ts, cached_val = _FORECAST_CACHE[cache_key]
+        if now_ts - cached_ts < 900:  # 15 minutes TTL
+            return cached_val
 
     params = {
         "latitude": latitude,
@@ -296,23 +308,34 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
             resp.raise_for_status()
             data = resp.json()
     except httpx.TimeoutException as exc:
+        if cache_key in _FORECAST_CACHE:
+            return _FORECAST_CACHE[cache_key][1]
         raise WeatherTimeoutError(
             f"Weather forecast request for ({latitude}, {longitude}) timed out after {DEFAULT_TIMEOUT_SECONDS}s."
         ) from exc
     except (httpx.ConnectError, httpx.NetworkError) as exc:
+        if cache_key in _FORECAST_CACHE:
+            return _FORECAST_CACHE[cache_key][1]
         raise WeatherConnectionError(
             f"Could not connect to weather provider at {OPEN_METEO_BASE_URL}: {exc}"
         ) from exc
     except httpx.HTTPError as exc:
+        if cache_key in _FORECAST_CACHE:
+            return _FORECAST_CACHE[cache_key][1]
         raise WeatherServiceError(
             f"Weather provider request failed with HTTP error: {exc}"
         ) from exc
     except Exception as exc:
+        if cache_key in _FORECAST_CACHE:
+            return _FORECAST_CACHE[cache_key][1]
         raise WeatherServiceError(
             f"Unexpected error fetching weather forecast: {exc}"
         ) from exc
 
-    return _format_forecast(data, latitude, longitude)
+    formatted = _format_forecast(data, latitude, longitude)
+    _FORECAST_CACHE[cache_key] = (now_ts, formatted)
+    return formatted
+
 
 
 def _format_forecast(data: Dict[str, Any], req_lat: float, req_lon: float) -> Dict[str, Any]:
