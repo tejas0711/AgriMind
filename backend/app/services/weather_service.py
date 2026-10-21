@@ -16,7 +16,8 @@ import httpx
 OPEN_METEO_BASE_URL = os.getenv("OPEN_METEO_BASE_URL", "https://api.open-meteo.com/v1/forecast")
 OPEN_METEO_GEOCODING_URL = os.getenv("OPEN_METEO_GEOCODING_URL", "https://geocoding-api.open-meteo.com/v1/search")
 
-DEFAULT_TIMEOUT_SECONDS = 10.0
+DEFAULT_TIMEOUT_SECONDS = 4.0
+GEOCODING_TIMEOUT_SECONDS = 3.5
 
 
 # ---------------------------------------------------------------------------
@@ -92,34 +93,115 @@ def get_wmo_condition(code: Optional[int]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Instant Geocoding Cache & Presets (Maharashtra & Major Indian Agri Hubs)
+# ---------------------------------------------------------------------------
+
+KNOWN_INDIAN_LOCATIONS: Dict[str, Tuple[float, float, str, str]] = {
+    # format: (latitude, longitude, formatted_name, timezone)
+    "pune": (18.5204, 73.8567, "Pune, Maharashtra, India", "Asia/Kolkata"),
+    "mumbai": (19.0760, 72.8777, "Mumbai, Maharashtra, India", "Asia/Kolkata"),
+    "nagpur": (21.1458, 79.0882, "Nagpur, Maharashtra, India", "Asia/Kolkata"),
+    "nashik": (19.9975, 73.7898, "Nashik, Maharashtra, India", "Asia/Kolkata"),
+    "nasik": (19.9975, 73.7898, "Nashik, Maharashtra, India", "Asia/Kolkata"),
+    "aurangabad": (19.8762, 75.3433, "Chhatrapati Sambhajinagar, Maharashtra, India", "Asia/Kolkata"),
+    "chhatrapati sambhajinagar": (19.8762, 75.3433, "Chhatrapati Sambhajinagar, Maharashtra, India", "Asia/Kolkata"),
+    "sambhajinagar": (19.8762, 75.3433, "Chhatrapati Sambhajinagar, Maharashtra, India", "Asia/Kolkata"),
+    "solapur": (17.6599, 75.9064, "Solapur, Maharashtra, India", "Asia/Kolkata"),
+    "kolhapur": (16.7050, 74.2433, "Kolhapur, Maharashtra, India", "Asia/Kolkata"),
+    "amravati": (20.9374, 77.7796, "Amravati, Maharashtra, India", "Asia/Kolkata"),
+    "nanded": (19.1383, 77.3210, "Nanded, Maharashtra, India", "Asia/Kolkata"),
+    "sangli": (16.8524, 74.5815, "Sangli, Maharashtra, India", "Asia/Kolkata"),
+    "jalgaon": (21.0077, 75.5626, "Jalgaon, Maharashtra, India", "Asia/Kolkata"),
+    "akola": (20.7002, 77.0082, "Akola, Maharashtra, India", "Asia/Kolkata"),
+    "latur": (18.4088, 76.5604, "Latur, Maharashtra, India", "Asia/Kolkata"),
+    "dhule": (20.9042, 74.7749, "Dhule, Maharashtra, India", "Asia/Kolkata"),
+    "ahmednagar": (19.0948, 74.7480, "Ahilyanagar, Maharashtra, India", "Asia/Kolkata"),
+    "ahilyanagar": (19.0948, 74.7480, "Ahilyanagar, Maharashtra, India", "Asia/Kolkata"),
+    "chandrapur": (19.9615, 79.2961, "Chandrapur, Maharashtra, India", "Asia/Kolkata"),
+    "parbhani": (19.2644, 76.7767, "Parbhani, Maharashtra, India", "Asia/Kolkata"),
+    "jalna": (19.8347, 75.8816, "Jalna, Maharashtra, India", "Asia/Kolkata"),
+    "beed": (18.9891, 75.7601, "Beed, Maharashtra, India", "Asia/Kolkata"),
+    "satara": (17.6805, 73.9922, "Satara, Maharashtra, India", "Asia/Kolkata"),
+    "osmanabad": (18.1856, 76.0419, "Dharashiv, Maharashtra, India", "Asia/Kolkata"),
+    "dharashiv": (18.1856, 76.0419, "Dharashiv, Maharashtra, India", "Asia/Kolkata"),
+    "yavatmal": (20.3888, 78.1204, "Yavatmal, Maharashtra, India", "Asia/Kolkata"),
+    "wardha": (20.7453, 78.6022, "Wardha, Maharashtra, India", "Asia/Kolkata"),
+    "bhandara": (21.1667, 79.6500, "Bhandara, Maharashtra, India", "Asia/Kolkata"),
+    "gondia": (21.4598, 80.1961, "Gondia, Maharashtra, India", "Asia/Kolkata"),
+    "gadchiroli": (20.1809, 80.0033, "Gadchiroli, Maharashtra, India", "Asia/Kolkata"),
+    "washim": (20.1111, 77.1333, "Washim, Maharashtra, India", "Asia/Kolkata"),
+    "hingoli": (19.7173, 77.1485, "Hingoli, Maharashtra, India", "Asia/Kolkata"),
+    "buldhana": (20.5292, 76.1843, "Buldhana, Maharashtra, India", "Asia/Kolkata"),
+    "nandurbar": (21.3697, 74.2394, "Nandurbar, Maharashtra, India", "Asia/Kolkata"),
+    "raigad": (18.6414, 72.8722, "Raigad, Maharashtra, India", "Asia/Kolkata"),
+    "alibag": (18.6414, 72.8722, "Alibag, Maharashtra, India", "Asia/Kolkata"),
+    "ratnagiri": (16.9902, 73.3120, "Ratnagiri, Maharashtra, India", "Asia/Kolkata"),
+    "sindhudurg": (16.1158, 73.6980, "Sindhudurg, Maharashtra, India", "Asia/Kolkata"),
+    "thane": (19.2183, 72.9781, "Thane, Maharashtra, India", "Asia/Kolkata"),
+    "palghar": (19.6967, 72.7699, "Palghar, Maharashtra, India", "Asia/Kolkata"),
+    "baramati": (18.1517, 74.5770, "Baramati, Maharashtra, India", "Asia/Kolkata"),
+    "shirdi": (19.7667, 74.4762, "Shirdi, Maharashtra, India", "Asia/Kolkata"),
+    "delhi": (28.6139, 77.2090, "Delhi, India", "Asia/Kolkata"),
+    "bengaluru": (12.9716, 77.5946, "Bengaluru, Karnataka, India", "Asia/Kolkata"),
+    "bangalore": (12.9716, 77.5946, "Bengaluru, Karnataka, India", "Asia/Kolkata"),
+    "hyderabad": (17.3850, 78.4867, "Hyderabad, Telangana, India", "Asia/Kolkata"),
+    "chennai": (13.0827, 80.2707, "Chennai, Tamil Nadu, India", "Asia/Kolkata"),
+    "kolkata": (22.5726, 88.3639, "Kolkata, West Bengal, India", "Asia/Kolkata"),
+    "ahmedabad": (23.0225, 72.5714, "Ahmedabad, Gujarat, India", "Asia/Kolkata"),
+    "jaipur": (26.9124, 75.7873, "Jaipur, Rajasthan, India", "Asia/Kolkata"),
+    "lucknow": (26.8467, 80.9462, "Lucknow, Uttar Pradesh, India", "Asia/Kolkata"),
+    "bhopal": (23.2599, 77.4126, "Bhopal, Madhya Pradesh, India", "Asia/Kolkata"),
+    "patna": (25.5941, 85.1376, "Patna, Bihar, India", "Asia/Kolkata"),
+    "chandigarh": (30.7333, 76.7794, "Chandigarh, India", "Asia/Kolkata"),
+    "indore": (22.7196, 75.8577, "Indore, Madhya Pradesh, India", "Asia/Kolkata"),
+}
+
+
+# ---------------------------------------------------------------------------
 # Geocoding Services
 # ---------------------------------------------------------------------------
 
 async def geocode_location_info(name: str) -> Optional[Dict[str, Any]]:
     """Resolves a free-text location into detailed coordinate and place metadata.
 
-    Returns a dictionary with latitude, longitude, name, admin1 (state/province),
-    country, formatted_name, and timezone. Returns None if no match is found.
+    First checks in-memory dictionary for instant (0ms) lookup.
+    Falls back to Open-Meteo Geocoding API with a strict timeout.
     """
     if not name or not name.strip():
         return None
 
-    query = name.strip()
-    params = {"name": query, "count": 1, "language": "en", "format": "json"}
+    raw_query = name.strip()
+    norm_query = raw_query.lower()
+
+    # 1. Instant preset dictionary lookup (0ms round-trip)
+    for key, (lat, lon, fmt_name, tz) in KNOWN_INDIAN_LOCATIONS.items():
+        if key == norm_query or key in norm_query:
+            return {
+                "latitude": lat,
+                "longitude": lon,
+                "name": key.title(),
+                "admin1": "Maharashtra" if "Maharashtra" in fmt_name else "India",
+                "country": "India",
+                "formatted_name": fmt_name,
+                "timezone": tz,
+            }
+
+    # 2. Remote geocoding fallback
+    params = {"name": raw_query, "count": 1, "language": "en", "format": "json"}
 
     try:
-        async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT_SECONDS) as client:
+        async with httpx.AsyncClient(timeout=GEOCODING_TIMEOUT_SECONDS) as client:
             resp = await client.get(OPEN_METEO_GEOCODING_URL, params=params)
             resp.raise_for_status()
             data = resp.json()
     except httpx.TimeoutException as exc:
-        raise WeatherTimeoutError(f"Geocoding request for '{query}' timed out after {DEFAULT_TIMEOUT_SECONDS}s.") from exc
+        raise WeatherTimeoutError(f"Geocoding request for '{raw_query}' timed out after {GEOCODING_TIMEOUT_SECONDS}s.") from exc
     except (httpx.ConnectError, httpx.NetworkError) as exc:
-        raise WeatherConnectionError(f"Could not connect to geocoding service for '{query}': {exc}") from exc
+        raise WeatherConnectionError(f"Could not connect to geocoding service for '{raw_query}': {exc}") from exc
     except httpx.HTTPError as exc:
-        raise WeatherServiceError(f"Geocoding service returned an HTTP error for '{query}': {exc}") from exc
+        raise WeatherServiceError(f"Geocoding service returned an HTTP error for '{raw_query}': {exc}") from exc
     except Exception as exc:
-        raise WeatherServiceError(f"Unexpected error during geocoding for '{query}': {exc}") from exc
+        raise WeatherServiceError(f"Unexpected error during geocoding for '{raw_query}': {exc}") from exc
 
     results = data.get("results")
     if not results or not isinstance(results, list) or len(results) == 0:
@@ -131,12 +213,12 @@ async def geocode_location_info(name: str) -> Optional[Dict[str, Any]]:
     if lat is None or lon is None:
         return None
 
-    place_name = top.get("name", query)
+    place_name = top.get("name", raw_query)
     admin1 = top.get("admin1")
     country = top.get("country")
 
     parts = [p for p in [place_name, admin1, country] if p]
-    formatted_name = ", ".join(parts) if parts else query
+    formatted_name = ", ".join(parts) if parts else raw_query
 
     return {
         "latitude": float(lat),
@@ -147,6 +229,7 @@ async def geocode_location_info(name: str) -> Optional[Dict[str, Any]]:
         "formatted_name": formatted_name,
         "timezone": top.get("timezone", "auto"),
     }
+
 
 
 async def geocode_location(name: str) -> Optional[Tuple[float, float]]:

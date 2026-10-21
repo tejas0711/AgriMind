@@ -116,7 +116,8 @@ async def test_geocoding_unknown_location_returns_none():
 async def test_geocoding_timeout_raises_weather_timeout():
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock, side_effect=httpx.TimeoutException("Timeout")):
         with pytest.raises(WeatherTimeoutError):
-            await geocode_location_info("Nagpur")
+            await geocode_location_info("RemoteUncachedTown")
+
 
 
 # ============================================================================

@@ -250,7 +250,9 @@ def _get_ordered_providers() -> List[Tuple[str, str, str, Optional[str]]]:
     available = {}
     if openai_key:
         available["openai"] = ("OpenAI", openai_key, openai_model, llm_base_url)
-    if gemini_key:
+    # Valid Google AI Studio Gemini API keys begin with 'AIza'.
+    # If a cloud IDE session token (starting with 'AQ.') is entered, ignore it to prevent 400 Bad Request delays.
+    if gemini_key and not gemini_key.startswith("AQ."):
         available["gemini"] = ("Gemini", gemini_key, gemini_model, GEMINI_BASE_URL)
     if openrouter_key:
         available["openrouter"] = ("OpenRouter", openrouter_key, openrouter_model, OPENROUTER_BASE_URL)
@@ -311,7 +313,7 @@ async def generate_explanation_result(
         client = AsyncOpenAI(
             api_key=api_key,
             base_url=base_url,
-            timeout=8.0,
+            timeout=6.0,
             max_retries=0,
         )
         for attempt in range(2):

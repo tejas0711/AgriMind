@@ -4,6 +4,10 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
+# Suppress ChromaDB posthog telemetry to prevent network lag and capture() argument errors
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+os.environ.setdefault("CHROMA_TELEMETRY", "False")
+
 CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", os.path.join(os.path.dirname(__file__), "..", "..", "vector_db"))
 COLLECTION_NAME = "agrimind_knowledge"
 
