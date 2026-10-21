@@ -24,7 +24,7 @@ services:
     container_name: agrimind-backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8000:10000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-agrimind}:${POSTGRES_PASSWORD:-agrimind_dev_pass}@db:5432/${POSTGRES_DB:-agrimind_db}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-agrimind_dev_jwt_secret_key_change_in_production_32char}
