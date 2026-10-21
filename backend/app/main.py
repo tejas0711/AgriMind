@@ -129,6 +129,7 @@ async def root():
 
 
 @app.get("/health", tags=["root"])
+@app.get("/healthz", tags=["root"])
 async def root_health():
     """Alias for /api/health for standard container liveness probes."""
     return {
