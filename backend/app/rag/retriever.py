@@ -6,6 +6,7 @@ sub-second responses without hanging cloud container threads.
 """
 from __future__ import annotations
 
+import os
 import re
 import time
 from functools import lru_cache
@@ -76,7 +77,13 @@ def retrieve(query_text: str, top_k: int = 4, category: Optional[str] = None) ->
 
     cleaned_query = query_text.strip()
 
-    # Try ChromaDB dense retrieval first
+    # Fast in-memory retrieval by default (0.005s, 0MB overhead) to prevent cloud container timeouts
+    if os.getenv("USE_CHROMA_EMBEDDINGS", "false").lower() != "true":
+        results = _keyword_retrieve(cleaned_query, top_k=top_k, category=category)
+        if results:
+            return results
+
+    # Try ChromaDB dense retrieval if explicitly enabled or keyword found nothing
     try:
         t0 = time.time()
         embedding = embed_query(cleaned_query)
