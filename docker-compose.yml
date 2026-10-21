@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: agrimind-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agrimind}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agrimind_dev_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-agrimind_db}
+    volumes:
+      - agrimind_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrimind -d agrimind_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: agrimind-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-agrimind}:${POSTGRES_PASSWORD:-agrimind_dev_pass}@db:5432/${POSTGRES_DB:-agrimind_db}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-agrimind_dev_jwt_secret_key_change_in_production_32char}
+      - JWT_ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-openai/gpt-4o-mini}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN:-http://localhost:5173,http://127.0.0.1:5173}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      - CHROMA_PERSIST_DIR=/app/vector_db
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - agrimind_vector_db:/app/vector_db
+      - agrimind_uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    container_name: agrimind-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  agrimind_postgres_data:
+  agrimind_vector_db:
+  agrimind_uploads:

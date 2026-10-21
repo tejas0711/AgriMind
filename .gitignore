@@ -1,0 +1,60 @@
+# ==============================================================================
+# AgriMind Version Control Ignore Rules
+# ==============================================================================
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local SQLite databases & Vector Stores
+*.db
+*.sqlite
+*.sqlite3
+agrimind.db
+backend/agrimind.db
+vector_db/
+backend/vector_db/
+uploads/
+backend/uploads/
+
+# Environment Secrets (NEVER commit secrets or real keys)
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Node & Frontend Artifacts
+node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

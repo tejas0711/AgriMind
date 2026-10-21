@@ -1,0 +1,406 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  AgriMind Color Architecture
+  ===========================
+  LIGHT MODE (Original Organic Soil & Forest Pattern from reference):
+    - Background Canvas: #faf8f4 (Warm Wheat / Cream Canvas)
+    - Card Surfaces: #ffffff (Pure White / Crisp Cream)
+    - Borders: #e2d5c2 (Warm Soil Border)
+    - Primary Brand & Headings: #18392b (Deep Forest Green)
+    - Secondary Headings & Accents: #2f553d (Forest Green 700)
+    - Subtitles & Body Text: #543c29 (Soil 700) & #6e5239 (Soil 600)
+    - Monospace Step Labels & Metadata: #8a6b4e (Soil 500)
+    - Primary Buttons / Active Pills: #2f553d / #18392b (Rich Forest Green with white text)
+    - Positive / High Score Indicators: #5c8f37 (Leaf Green)
+
+  DARK MODE (Kept exactly as it is):
+    - Background Canvas: #0B2B26 (Midnight Forest Green)
+    - Card Surfaces: #163832 (Dark Forest Green)
+    - Borders & Active States: #235347 (Pine Green)
+    - Headings & Text: #FFFFFF (Pure White)
+    - Subtitles & Highlights: #DAF1DE & #8EB69B
+*/
+
+@layer base {
+  body {
+    min-width: 320px;
+    background-color: #faf8f4;
+    color: #18392b;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Focus ring for accessibility */
+  *:focus-visible {
+    outline: 2px solid #2f553d;
+    outline-offset: 2px;
+  }
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES (Original Warm Organic Pattern)
+   ========================================================================== */
+html:not(.dark) body {
+  background-color: #faf8f4 !important;
+  color: #18392b !important;
+}
+
+html:not(.dark) .bg-canvas {
+  background-color: #faf8f4 !important;
+}
+
+/* Header & Navbar in Light Mode: Crisp White with warm border */
+html:not(.dark) header {
+  background-color: #ffffff !important;
+  border-color: #e2d5c2 !important;
+}
+
+/* All Card and Panel Surfaces in Light Mode (Pure White, no uneven dark patches) */
+html:not(.dark) .bg-white,
+html:not(.dark) .bg-white\/95,
+html:not(.dark) .bg-white\/90,
+html:not(.dark) .bg-white\/80,
+html:not(.dark) .bg-white\/70,
+html:not(.dark) .bg-white\/60 {
+  background-color: #ffffff !important;
+}
+
+/* Borders in Light Mode */
+html:not(.dark) .border-soil-300 {
+  border-color: #cbb69c !important;
+}
+html:not(.dark) .border-soil-200 {
+  border-color: #e2d5c2 !important;
+}
+html:not(.dark) .border-soil-100 {
+  border-color: #f1eae0 !important;
+}
+html:not(.dark) .border-forest-200,
+html:not(.dark) .border-forest-300 {
+  border-color: #cbded1 !important;
+}
+
+/* Soft background tints in Light Mode */
+html:not(.dark) .bg-soil-50,
+html:not(.dark) .bg-soil-50\/80,
+html:not(.dark) .bg-soil-50\/60,
+html:not(.dark) .bg-soil-50\/50,
+html:not(.dark) .bg-soil-50\/40,
+html:not(.dark) .bg-soil-50\/30 {
+  background-color: #faf7f2 !important;
+}
+
+html:not(.dark) .bg-soil-100,
+html:not(.dark) .bg-soil-100\/70,
+html:not(.dark) .bg-soil-100\/50 {
+  background-color: #f1eae0 !important;
+}
+
+html:not(.dark) .bg-forest-50,
+html:not(.dark) .bg-forest-50\/70,
+html:not(.dark) .bg-forest-50\/60,
+html:not(.dark) .bg-forest-50\/50,
+html:not(.dark) .bg-forest-50\/40 {
+  background-color: #f3f7f4 !important;
+}
+
+html:not(.dark) .bg-forest-100 {
+  background-color: #e4ede7 !important;
+}
+
+/* Primary Forest Green Action Buttons & Active Pills in Light Mode */
+html:not(.dark) .bg-forest-900,
+html:not(.dark) .bg-forest-950 {
+  background-color: #18392b !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) .bg-forest-800 {
+  background-color: #264432 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) .bg-forest-700 {
+  background-color: #2f553d !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) .hover\:bg-forest-800:hover,
+html:not(.dark) .hover\:bg-forest-900:hover {
+  background-color: #264432 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure text inside dark green buttons, pills and badges stays pure white */
+html:not(.dark) .text-white,
+html:not(.dark) .bg-forest-900,
+html:not(.dark) .bg-forest-900 *,
+html:not(.dark) .bg-forest-800,
+html:not(.dark) .bg-forest-800 *,
+html:not(.dark) .bg-forest-700,
+html:not(.dark) .bg-forest-700 * {
+  color: #ffffff !important;
+}
+
+/* ALL Headings in Light Mode: Deep Forest Green #18392b */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6,
+html:not(.dark) .text-forest-950,
+html:not(.dark) .text-forest-900,
+html:not(.dark) .text-soil-950,
+html:not(.dark) .text-soil-900 {
+  color: #18392b !important;
+}
+
+/* Accent Links and Interactive Headers */
+html:not(.dark) .text-forest-800,
+html:not(.dark) .text-forest-700 {
+  color: #2f553d !important;
+}
+
+/* Body Text & Descriptions in Light Mode */
+html:not(.dark) .text-soil-700,
+html:not(.dark) .text-soil-600 {
+  color: #543c29 !important;
+}
+
+/* Minor labels, Hints & Placeholders in Light Mode */
+html:not(.dark) .text-soil-500,
+html:not(.dark) .text-soil-400 {
+  color: #8a6b4e !important;
+}
+
+html:not(.dark) .text-soil-300 {
+  color: #cbb69c !important;
+}
+
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="number"],
+html:not(.dark) select,
+html:not(.dark) textarea {
+  background-color: #ffffff !important;
+  color: #18392b !important;
+  border-color: #cbb69c !important;
+}
+
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: #b09375 !important;
+}
+
+html:not(.dark) .prose-editorial {
+  color: #18392b !important;
+}
+
+
+/* ==========================================================================
+   DARK MODE OVERRIDES (Image 2 Green Palette with Pure White Text)
+   ========================================================================== */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0B2B26 !important;
+  color: #FFFFFF !important;
+}
+
+/* Focus ring in Dark Mode */
+html.dark *:focus-visible {
+  outline: 2px solid #8EB69B;
+  outline-offset: 2px;
+}
+
+/* Background Canvas */
+html.dark .bg-canvas {
+  background-color: #0B2B26 !important;
+}
+
+/* Card Surfaces in Dark Mode: #163832 (Never white!) */
+html.dark .bg-white {
+  background-color: #163832 !important;
+}
+
+/* Secondary Surfaces and Insets */
+html.dark .bg-forest-950,
+html.dark .bg-forest-900\/60,
+html.dark .bg-forest-900\/50,
+html.dark .bg-forest-900\/40 {
+  background-color: #163832 !important;
+}
+
+html.dark .bg-soil-50,
+html.dark .bg-forest-50 {
+  background-color: #13322C !important;
+}
+
+html.dark .bg-soil-100,
+html.dark .bg-forest-100 {
+  background-color: #1A4038 !important;
+}
+
+/* Borders in Dark Mode: #235347 */
+html.dark .border-soil-300,
+html.dark .border-soil-200,
+html.dark .border-soil-100,
+html.dark .border-forest-700,
+html.dark .border-forest-800,
+html.dark .border-forest-900 {
+  border-color: #235347 !important;
+}
+
+/* Active buttons, pills & prominent controls in Dark Mode: #235347 */
+html.dark .bg-forest-900,
+html.dark .bg-forest-800,
+html.dark .bg-leaf-700,
+html.dark .bg-leaf-600 {
+  background-color: #235347 !important;
+  color: #FFFFFF !important;
+  border-color: #235347 !important;
+}
+
+html.dark .bg-forest-900:hover,
+html.dark .bg-forest-800:hover,
+html.dark .hover\:bg-forest-800:hover,
+html.dark .hover\:bg-forest-700:hover,
+html.dark .hover\:bg-leaf-500:hover {
+  background-color: #2E6B5C !important;
+  color: #FFFFFF !important;
+}
+
+/* ALL Headings, Labels, and Body Text in Dark Mode: Pure White #FFFFFF */
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6,
+html.dark .text-\[\#0C1D32\],
+html.dark .text-\[\#1F3249\],
+html.dark .text-forest-950,
+html.dark .text-forest-900,
+html.dark .text-forest-100,
+html.dark .text-forest-50,
+html.dark .text-soil-950,
+html.dark .text-soil-900,
+html.dark .text-soil-800,
+html.dark .text-soil-700,
+html.dark .text-soil-600 {
+  color: #FFFFFF !important;
+}
+
+/* Subtitles, secondary descriptions and meta text in Dark Mode: Crisp High-Contrast White/Mint */
+html.dark .text-\[\#435C75\],
+html.dark .text-soil-500,
+html.dark .text-soil-400,
+html.dark .text-soil-300 {
+  color: #DAF1DE !important;
+}
+
+/* Mint Highlights for Secondary Headers and Active Icons: #DAF1DE */
+html.dark .text-forest-800,
+html.dark .text-forest-700,
+html.dark .text-leaf-400,
+html.dark .text-leaf-300 {
+  color: #DAF1DE !important;
+}
+
+/* Form Inputs in Dark Mode */
+html.dark input[type="text"],
+html.dark input[type="number"],
+html.dark select,
+html.dark textarea {
+  background-color: #122F2A !important;
+  color: #FFFFFF !important;
+  border-color: #235347 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #8EB69B !important;
+}
+
+html.dark .prose-editorial {
+  color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   UTILITY & ANIMATION STYLES
+   ========================================================================== */
+.prose-editorial {
+  line-height: 1.68;
+}
+
+.data-readout {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Stratified Soil Core visual */
+.soil-layer {
+  position: relative;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.soil-layer:hover {
+  transform: translateX(2px);
+}
+
+/* Restrained animations */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.typing-dot {
+  animation: typing-bounce 1s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 140ms;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 280ms;
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "nitrogen": {
+    "chemical": [
+      {
+        "name": "Urea (46% N)",
+        "purpose": "Corrects acute nitrogen deficiency to support vegetative growth and chlorophyll synthesis.",
+        "application_notes": "Apply in 2-3 split doses to reduce leaching and ammonia volatilization loss; avoid application immediately before heavy rainfall.",
+        "cautions": "Excess application delays maturity, induces lodging, and increases susceptibility to sucking pests.",
+        "source": "ICAR Soil Testing & Fertilizer Recommendation Guidelines (2015)",
+        "is_provisional": true
+      },
+      {
+        "name": "Ammonium Sulphate (21% N, 24% S)",
+        "purpose": "Supplies ammoniacal nitrogen along with essential sulphur; particularly beneficial in neutral to alkaline soils.",
+        "application_notes": "Useful where sulphur is also deficient; has a mild acidifying effect on high-pH soils.",
+        "cautions": "Avoid repeated heavy use on strongly acidic soils without liming.",
+        "source": "ICAR Fertilizer Recommendations / FAI Handbook",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Farmyard Manure (FYM)",
+        "purpose": "Gradually builds soil nitrogen reserve while enhancing soil biological activity and water-holding capacity.",
+        "application_notes": "Apply well-decomposed FYM 2-3 weeks before sowing and incorporate thoroughly into the top 15 cm of soil.",
+        "cautions": "Must be well-decomposed to avoid nitrogen immobilization (tie-up) and weed seed introduction.",
+        "source": "ICAR Organic Farming & Soil Fertility Practices",
+        "is_provisional": true
+      },
+      {
+        "name": "Vermicompost",
+        "purpose": "Supplies readily available organic nitrogen, beneficial microbes, and plant growth-promoting enzymes.",
+        "application_notes": "Mix into topsoil near the root zone at planting or early vegetative stages.",
+        "cautions": "Store in shade and maintain adequate moisture to preserve microbial viability.",
+        "source": "ICAR Organic Farming & Soil Fertility Practices",
+        "is_provisional": true
+      }
+    ]
+  },
+  "phosphorus": {
+    "chemical": [
+      {
+        "name": "Single Super Phosphate (SSP, 16% P2O5, 11% S, 19% Ca)",
+        "purpose": "Supplies readily available water-soluble phosphorus for early root establishment and energy transfer (ATP).",
+        "application_notes": "Apply as a basal dose at sowing near the root zone; phosphorus is immobile in soil and must be placed where roots can reach it.",
+        "cautions": "Avoid surface broadcasting; phosphorus fixes quickly in strongly acidic or calcareous soils.",
+        "source": "ICAR Fertilizer Recommendations / FAI Handbook",
+        "is_provisional": true
+      },
+      {
+        "name": "Di-Ammonium Phosphate (DAP, 18% N, 46% P2O5)",
+        "purpose": "Concentrated starter fertilizer supplying high phosphorus with starter nitrogen for seedling vigour.",
+        "application_notes": "Apply basal at sowing placed 3-5 cm below and to the side of the seed line.",
+        "cautions": "Avoid direct seed contact to prevent ammonia injury to emerging radicals.",
+        "source": "ICAR Fertilizer Recommendations / FAI Handbook",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Rock Phosphate (Promoted with PSB)",
+        "purpose": "Slow-release phosphorus source that improves soil mineral reserves naturally.",
+        "application_notes": "Apply in acidic soils (pH < 6.5) along with Phosphate Solubilizing Bacteria (PSB) and organic manure to accelerate dissolution.",
+        "cautions": "Very low solubility in alkaline or calcareous soils; ineffective on soils with pH > 7.5.",
+        "source": "ICAR Organic Soil Amendment Guidelines",
+        "is_provisional": true
+      },
+      {
+        "name": "Bone Meal (Raw / Steamed)",
+        "purpose": "Slow-acting natural phosphorus and calcium source suitable for perennial and organic vegetable farming.",
+        "application_notes": "Incorporate thoroughly into soil before planting or as a basal pit dressing.",
+        "cautions": "Requires soil microbial action to release plant-available phosphate.",
+        "source": "ICAR Organic Soil Amendment Guidelines",
+        "is_provisional": true
+      }
+    ]
+  },
+  "potassium": {
+    "chemical": [
+      {
+        "name": "Muriate of Potash (MOP / KCl, 60% K2O)",
+        "purpose": "Corrects potassium deficiency, regulates stomatal water loss, and enhances disease/drought resistance.",
+        "application_notes": "Apply basal or in two splits on sandy soils with low cation-exchange capacity.",
+        "cautions": "Contains chloride; avoid on chloride-sensitive crops like tobacco, potato, and grapes.",
+        "source": "ICAR Soil Testing & Fertilizer Recommendation Guidelines (2015)",
+        "is_provisional": true
+      },
+      {
+        "name": "Sulphate of Potash (SOP / K2SO4, 50% K2O, 17.5% S)",
+        "purpose": "Chloride-free potassium source that also supplies sulphur, ideal for high-value horticultural crops.",
+        "application_notes": "Apply basal or via fertigation during peak flowering and fruit development.",
+        "cautions": "More expensive per unit K than MOP; reserve for chloride-sensitive crops or high-salinity soils.",
+        "source": "ICAR / FAI Fertilizer Practice Manual",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Wood Ash (Clean / Untreated)",
+        "purpose": "Traditional organic potash source (4-10% K2O) containing calcium and magnesium.",
+        "application_notes": "Incorporate lightly into topsoil or compost heap.",
+        "cautions": "Has a strong liming effect (raises pH); avoid applying to soils that are already alkaline (pH > 7.5).",
+        "source": "Organic Farming & Soil Amendment Reference",
+        "is_provisional": true
+      },
+      {
+        "name": "Composted Banana Pseudo-stem / Agricultural Residue",
+        "purpose": "Potassium-rich farm waste recycling to replenish exchangeable potassium.",
+        "application_notes": "Apply 3-5 tonnes/ha during land preparation.",
+        "cautions": "Ensure complete composting to eliminate pest carriers.",
+        "source": "ICAR Organic Farming & Soil Fertility Practices",
+        "is_provisional": true
+      }
+    ]
+  },
+  "organic_carbon": {
+    "chemical": [],
+    "organic": [
+      {
+        "name": "Green Manure (Dhaincha / Sunhemp)",
+        "purpose": "Increases soil organic carbon, fixes atmospheric nitrogen, and improves soil structure and permeability.",
+        "application_notes": "Sow at 25-30 kg seed/ha and plough under at 45-50 days (flowering stage), allowing 10-15 days for decomposition before planting main crop.",
+        "cautions": "Requires adequate soil moisture for rapid microbial decomposition.",
+        "source": "ICAR National Project on Organic Farming",
+        "is_provisional": true
+      },
+      {
+        "name": "Well-Decomposed Farmyard Manure (FYM) / Compost",
+        "purpose": "Restores depleted soil organic matter, increases cation exchange capacity (CEC), and buffers soil pH.",
+        "application_notes": "Incorporate 8-10 tonnes/ha across crop rotations; requires sustained multi-season commitment.",
+        "cautions": "Not an instantaneous one-week fix; benefits accumulate over multiple seasons.",
+        "source": "ICAR Organic Farming & Soil Fertility Practices",
+        "is_provisional": true
+      }
+    ]
+  },
+  "zinc": {
+    "chemical": [
+      {
+        "name": "Zinc Sulphate Heptahydrate (ZnSO4.7H2O, 21% Zn)",
+        "purpose": "Alleviates acute zinc deficiency, vital for auxin synthesis and enzyme activation.",
+        "application_notes": "Apply as a soil basal dose (20-25 kg/ha) or as a 0.5% foliar spray neutralized with lime for standing crop deficiency.",
+        "cautions": "Do not mix directly with phosphatic fertilizers in spray tank to avoid insoluble zinc phosphate precipitation.",
+        "source": "ICAR Micronutrient Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Zinc-Enriched Farmyard Manure",
+        "purpose": "Natural chelation of zinc with organic acids, enhancing bioavailability in alkaline soils.",
+        "application_notes": "Incubate zinc sulphate with moist FYM (1:10 ratio) for 3-4 weeks prior to basal application.",
+        "cautions": "Plan incubation period ahead of sowing schedule.",
+        "source": "ICAR Micronutrient Research & Practice",
+        "is_provisional": true
+      }
+    ]
+  },
+  "iron": {
+    "chemical": [
+      {
+        "name": "Ferrous Sulphate (FeSO4.7H2O, 19% Fe)",
+        "purpose": "Corrects iron chlorosis (yellowing between leaf veins) in new leaves.",
+        "application_notes": "Foliar spray of 0.5-1.0% solution with 0.1% citric acid is far more effective than soil application in alkaline soils.",
+        "cautions": "Soil applications often precipitate rapidly as insoluble ferric hydroxide in calcareous soils (pH > 7.5).",
+        "source": "ICAR Micronutrient Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Compost & Organic Mulch with Humic Substances",
+        "purpose": "Natural siderophores and humic fractions chelate iron, preventing fixation in high-pH soils.",
+        "application_notes": "Apply around plant drip line to lower rhizosphere pH micro-environment.",
+        "cautions": "Acts gradually over the growing season.",
+        "source": "ICAR Micronutrient Research & Practice",
+        "is_provisional": true
+      }
+    ]
+  },
+  "sulphur": {
+    "chemical": [
+      {
+        "name": "Agricultural Gypsum (CaSO4.2H2O, 13-18% S, 20-22% Ca)",
+        "purpose": "Supplies readily available sulphate-sulphur for amino acid synthesis without altering soil pH.",
+        "application_notes": "Apply 200-250 kg/ha as a basal broadcast and incorporate into soil at final land preparation.",
+        "cautions": "Ensure good soil moisture for dissolution.",
+        "source": "ICAR Secondary Nutrient Guidelines (2015)",
+        "is_provisional": true
+      },
+      {
+        "name": "Bentonite Sulphur (Pastille, 90% S)",
+        "purpose": "High-concentration slow-release elemental sulphur for multi-season sulphur buffering.",
+        "application_notes": "Apply 25-30 kg/ha basal before planting.",
+        "cautions": "Requires microbial oxidation in soil before becoming plant-available sulphate; slow initial release in cool or dry soils.",
+        "source": "FAI Sulphur Management Handbook",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Decomposed Farmyard Manure & Oilcake Blend",
+        "purpose": "Organic source of sulphur derived from plant protein mineralization.",
+        "application_notes": "Incorporate basal during tillage.",
+        "cautions": "Sulphur release rate depends on soil temperature and microbial activity.",
+        "source": "ICAR Organic Soil Amendment Guidelines",
+        "is_provisional": true
+      }
+    ]
+  },
+  "boron": {
+    "chemical": [
+      {
+        "name": "Borax (Sodium Tetraborate, 10.5% B) / Solubor (20% B)",
+        "purpose": "Crucial for pollen viability, cell wall formation, fruit setting, and sugar translocation.",
+        "application_notes": "Soil application of 5-10 kg/ha borax basal, or foliar spray of 0.1-0.2% Solubor at flower bud initiation.",
+        "cautions": "Very narrow threshold between deficiency and toxicity; do NOT exceed recommended dosages.",
+        "source": "ICAR Micronutrient Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Boron-Enriched Compost / Vermicompost",
+        "purpose": "Safe, slow-release delivery of boron buffered by organic colloids to avoid localized toxicity.",
+        "application_notes": "Mix into soil during bed preparation.",
+        "cautions": "Test soil boron levels annually when using regular micronutrient composts.",
+        "source": "ICAR Micronutrient Research & Practice",
+        "is_provisional": true
+      }
+    ]
+  },
+  "copper": {
+    "chemical": [
+      {
+        "name": "Copper Sulphate (CuSO4.5H2O, 24% Cu)",
+        "purpose": "Corrects copper deficiency, essential for photosynthesis, respiration, and lignin synthesis.",
+        "application_notes": "Soil application of 5-10 kg/ha or 0.1% neutralized foliar spray.",
+        "cautions": "Copper accumulates in soil; avoid repeated heavy applications to prevent microflora toxicity.",
+        "source": "ICAR Micronutrient Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Well-Aged Farmyard Manure with Organic Chelation",
+        "purpose": "Maintains low but steady copper availability in native soil solutions.",
+        "application_notes": "Standard seasonal incorporation.",
+        "cautions": "Requires biologically active soil.",
+        "source": "ICAR Organic Soil Amendment Guidelines",
+        "is_provisional": true
+      }
+    ]
+  },
+  "manganese": {
+    "chemical": [
+      {
+        "name": "Manganese Sulphate (MnSO4, 30.5% Mn)",
+        "purpose": "Restores manganese required for water-splitting in photosynthesis and nitrogen assimilation.",
+        "application_notes": "Foliar spray of 0.5% solution is preferred on alkaline or calcareous soils where soil Mn is rapidly immobilized.",
+        "cautions": "Do not spray during intense mid-day heat or direct sunlight.",
+        "source": "ICAR Micronutrient Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Compost / Farmyard Manure Incorporation",
+        "purpose": "Supplies trace manganese and organic chelators to enhance micronutrient mobility.",
+        "application_notes": "Incorporate into topsoil during pre-sowing plowing.",
+        "cautions": "Availability decreases as soil pH rises above 7.2.",
+        "source": "ICAR Organic Soil Amendment Guidelines",
+        "is_provisional": true
+      }
+    ]
+  },
+  "ph_acidic": {
+    "chemical": [
+      {
+        "name": "Agricultural Lime (Calcium Carbonate, CaCO3)",
+        "purpose": "Neutralizes toxic soil acidity (pH < 5.5), precipitates harmful soluble aluminium and manganese, and supplies calcium.",
+        "application_notes": "Broadcast and incorporate thoroughly into the top 15 cm of soil 3-4 weeks prior to planting.",
+        "cautions": "Do not over-lime; aim to bring soil pH to 6.2-6.5 rather than 7.5 to preserve micronutrient availability.",
+        "source": "ICAR Acid Soil Management Guidelines (2015)",
+        "is_provisional": true
+      },
+      {
+        "name": "Dolomitic Limestone (CaCO3 + MgCO3)",
+        "purpose": "Corrects soil acidity while simultaneously addressing magnesium deficiency common in weathered acidic soils.",
+        "application_notes": "Apply 3-4 weeks before sowing with thorough tillage.",
+        "cautions": "Test soil magnesium before applying large quantities.",
+        "source": "ICAR Acid Soil Management Guidelines (2015)",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Wood Ash / Biochar Compost",
+        "purpose": "Gentle, alkaline organic amendment that raises acidic soil pH and supplies basic cations.",
+        "application_notes": "Mix into soil during land preparation.",
+        "cautions": "Avoid direct seed contact.",
+        "source": "ICAR Organic Farming & Soil Amendment Reference",
+        "is_provisional": true
+      }
+    ]
+  },
+  "ph_alkaline": {
+    "chemical": [
+      {
+        "name": "Agricultural Gypsum (Calcium Sulphate, CaSO4.2H2O)",
+        "purpose": "Reclaims sodic / alkaline soils (pH > 8.0) by replacing exchangeable sodium on soil colloids with soluble calcium.",
+        "application_notes": "Broadcast and incorporate into soil, followed by heavy irrigation and drainage to leach displaced sodium salts.",
+        "cautions": "Adequate drainage is mandatory; without leaching, replaced sodium remains in the root zone.",
+        "source": "Central Soil Salinity Research Institute (CSSRI) / ICAR Guidelines",
+        "is_provisional": true
+      }
+    ],
+    "organic": [
+      {
+        "name": "Green Manuring with Dhaincha (Sesbania) & FYM",
+        "purpose": "Generates organic acids and carbon dioxide during decomposition that solubilize native calcium carbonate and lower rhizosphere pH.",
+        "application_notes": "Plough under green manure at 45 days and maintain soil moisture.",
+        "cautions": "Takes continuous management across 2-3 seasons for lasting soil structure reclamation.",
+        "source": "CSSRI / ICAR Sodic Soil Reclamation Practices",
+        "is_provisional": true
+      }
+    ]
+  }
+}

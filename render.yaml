@@ -1,0 +1,76 @@
+services:
+  # ============================================================================
+  # AgriMind Backend Service (FastAPI + SentenceTransformers + ChromaDB)
+  # ============================================================================
+  - type: web
+    name: agrimind-backend
+    runtime: python
+    region: oregon
+    plan: starter
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && alembic upgrade head && python -m app.rag.index_knowledge"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agrimind-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CHROMA_PERSIST_DIR
+        value: /tmp/vector_db
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+
+  # ============================================================================
+  # AgriMind Frontend Static Site (React + Vite SPA)
+  # ============================================================================
+  - type: web
+    name: agrimind-frontend
+    runtime: static
+    region: oregon
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: agrimind-backend
+          property: host
+
+databases:
+  # ============================================================================
+  # AgriMind Managed PostgreSQL Database
+  # ============================================================================
+  - name: agrimind-db
+    region: oregon
+    plan: free
+    databaseName: agrimind_db
+    user: agrimind

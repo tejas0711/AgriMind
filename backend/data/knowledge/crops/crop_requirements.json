@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Tomato",
+    "ph_min": 6.0, "ph_max": 6.8,
+    "n_min": 120, "n_max": 200,
+    "p_min": 15, "p_max": 30,
+    "k_min": 150, "k_max": 300,
+    "season": ["rabi", "zaid"],
+    "water_need": "medium",
+    "notes": "Prefers well-drained loam; sensitive to waterlogging and high EC."
+  },
+  {
+    "name": "Wheat",
+    "ph_min": 6.0, "ph_max": 7.5,
+    "n_min": 100, "n_max": 180,
+    "p_min": 12, "p_max": 25,
+    "k_min": 100, "k_max": 200,
+    "season": ["rabi"],
+    "water_need": "medium",
+    "notes": "Tolerant of a fairly wide pH band; responds well to split N application."
+  },
+  {
+    "name": "Rice (Paddy)",
+    "ph_min": 5.5, "ph_max": 7.0,
+    "n_min": 100, "n_max": 160,
+    "p_min": 10, "p_max": 20,
+    "k_min": 100, "k_max": 180,
+    "season": ["kharif"],
+    "water_need": "high",
+    "notes": "Tolerates lower pH; needs standing water for most of the season."
+  },
+  {
+    "name": "Cotton",
+    "ph_min": 6.0, "ph_max": 8.0,
+    "n_min": 100, "n_max": 180,
+    "p_min": 15, "p_max": 25,
+    "k_min": 100, "k_max": 200,
+    "season": ["kharif"],
+    "water_need": "medium",
+    "notes": "Reasonably tolerant of moderate salinity/EC compared with vegetables."
+  },
+  {
+    "name": "Soybean",
+    "ph_min": 6.0, "ph_max": 7.5,
+    "n_min": 60, "n_max": 120,
+    "p_min": 15, "p_max": 25,
+    "k_min": 100, "k_max": 180,
+    "season": ["kharif"],
+    "water_need": "medium",
+    "notes": "Legume - fixes its own nitrogen, so lower N requirement than cereals."
+  },
+  {
+    "name": "Onion",
+    "ph_min": 6.0, "ph_max": 7.0,
+    "n_min": 100, "n_max": 160,
+    "p_min": 15, "p_max": 25,
+    "k_min": 100, "k_max": 200,
+    "season": ["rabi"],
+    "water_need": "medium",
+    "notes": "Sensitive to high EC/salinity; prefers organic-carbon-rich soils."
+  },
+  {
+    "name": "Sugarcane",
+    "ph_min": 6.5, "ph_max": 7.5,
+    "n_min": 150, "n_max": 280,
+    "p_min": 15, "p_max": 30,
+    "k_min": 150, "k_max": 280,
+    "season": ["kharif", "rabi"],
+    "water_need": "high",
+    "notes": "Long-duration, heavy feeder crop; needs sustained irrigation."
+  },
+  {
+    "name": "Chickpea (Gram)",
+    "ph_min": 6.0, "ph_max": 7.5,
+    "n_min": 40, "n_max": 80,
+    "p_min": 15, "p_max": 25,
+    "k_min": 60, "k_max": 120,
+    "season": ["rabi"],
+    "water_need": "low",
+    "notes": "Legume; performs poorly with excess nitrogen fertilizer."
+  }
+]
