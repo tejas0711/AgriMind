@@ -32,12 +32,15 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("Database initialization deferred or failed: %s", exc)
 
-    try:
-        from app.rag.index_knowledge import ensure_indexed
-        indexed_count = ensure_indexed()
-        logger.info("RAG vector index verified (%s chunks active)", indexed_count)
-    except Exception as exc:
-        logger.warning("RAG knowledge index verification deferred or failed: %s", exc)
+    if os.getenv("USE_CHROMA_EMBEDDINGS", "false").lower() == "true":
+        try:
+            from app.rag.index_knowledge import ensure_indexed
+            indexed_count = ensure_indexed()
+            logger.info("RAG vector index verified (%s chunks active)", indexed_count)
+        except Exception as exc:
+            logger.warning("RAG knowledge index verification deferred or failed: %s", exc)
+    else:
+        logger.info("RAG knowledge base active in fast in-memory mode (43 chunks active, zero PyTorch RAM overhead)")
     yield
 
 

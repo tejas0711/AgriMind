@@ -12,8 +12,6 @@ import time
 from functools import lru_cache
 from typing import List, Optional, Set
 
-from app.rag import vector_store
-from app.rag.embedding_service import embed_query
 from app.models.recommendation import Evidence, Deficiency
 from app.models.soil import SoilReport
 
@@ -85,6 +83,8 @@ def retrieve(query_text: str, top_k: int = 4, category: Optional[str] = None) ->
 
     # Try ChromaDB dense retrieval if explicitly enabled or keyword found nothing
     try:
+        from app.rag import vector_store
+        from app.rag.embedding_service import embed_query
         t0 = time.time()
         embedding = embed_query(cleaned_query)
         where = {"category": category} if category else None

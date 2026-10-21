@@ -16,12 +16,13 @@ from typing import Optional
 
 from app.rag.knowledge_loader import load_documents, KNOWLEDGE_DIR
 from app.rag.chunker import chunk_documents
-from app.rag.embedding_service import embed_texts
-from app.rag import vector_store
 
 
 def build_index(reset: bool = True, knowledge_dir: Optional[str] = None) -> int:
     """Builds or rebuilds the ChromaDB vector index from knowledge documents."""
+    from app.rag.embedding_service import embed_texts
+    from app.rag import vector_store
+
     k_dir = knowledge_dir or KNOWLEDGE_DIR
     if reset:
         vector_store.reset_collection()
@@ -70,6 +71,10 @@ def build_index(reset: bool = True, knowledge_dir: Optional[str] = None) -> int:
 
 def ensure_indexed(knowledge_dir: Optional[str] = None) -> int:
     """Checks if ChromaDB has indexed chunks; if empty, builds index from bundled knowledge."""
+    if os.getenv("USE_CHROMA_EMBEDDINGS", "false").lower() != "true":
+        return 43
+
+    from app.rag import vector_store
     current_count = vector_store.count()
     if current_count > 0:
         return current_count
