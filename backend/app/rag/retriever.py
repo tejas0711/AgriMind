@@ -21,12 +21,6 @@ def retrieve(query_text: str, top_k: int = 4, category: Optional[str] = None) ->
     if not query_text or not query_text.strip():
         return []
 
-    try:
-        if vector_store.count() == 0:
-            return []
-    except Exception:
-        return []
-
     embedding = embed_query(query_text.strip())
     where = {"category": category} if category else None
 
@@ -102,7 +96,7 @@ def retrieve_for_recommendation(
     seen_sources: Set[str] = set()
     combined_evidence: List[Evidence] = []
 
-    for q in queries:
+    for q in queries[:2]:
         items = retrieve(q, top_k=2)
         for item in items:
             key = f"{item.source}::{item.heading or item.text[:40]}"

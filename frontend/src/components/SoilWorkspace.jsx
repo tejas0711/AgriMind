@@ -936,8 +936,16 @@ export default function SoilWorkspace({
           </label>
         </div>
 
+        {/* Error Notice near button */}
+        {error && (
+          <div className="rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 p-3.5 text-sm text-red-800 dark:text-red-300 flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+            <p className="leading-relaxed font-medium">{error}</p>
+          </div>
+        )}
+
         {/* Action Buttons */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
+        <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
           <button
             type="button"
             onClick={onAnalyze}

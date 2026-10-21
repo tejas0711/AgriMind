@@ -10,7 +10,7 @@ const API_BASE = (
   "http://localhost:8000"
 ).replace(/\/$/, "");
 
-const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_TIMEOUT_MS = 60000;
 
 class ApiError extends Error {
   constructor(message, status = 0, detail = null) {

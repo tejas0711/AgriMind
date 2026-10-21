@@ -20,12 +20,14 @@ def _get_client():
     )
 
 
+@lru_cache(maxsize=1)
 def get_collection():
     client = _get_client()
     return client.get_or_create_collection(name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"})
 
 
 def reset_collection():
+    get_collection.cache_clear()
     client = _get_client()
     try:
         client.delete_collection(COLLECTION_NAME)
