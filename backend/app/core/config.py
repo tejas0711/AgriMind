@@ -42,6 +42,8 @@ class Settings(BaseSettings):
 
     # Weather Service
     open_meteo_base_url: str = "https://api.open-meteo.com/v1/forecast"
+    open_meteo_api_key: str | None = None
+    weatherapi_key: str | None = None
 
     # Storage paths
     chroma_persist_dir: str = "./vector_db"
