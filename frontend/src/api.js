@@ -108,14 +108,20 @@ async function apiFetch(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
 }
 
 /**
- * Checks backend health at /api/health
+ * Checks backend health at /api/health (with 35s timeout for cloud cold starts)
  */
 export async function checkBackendHealth() {
   try {
-    const data = await apiFetch(`${API_BASE}/api/health`, { method: "GET" }, 4000);
+    const data = await apiFetch(`${API_BASE}/api/health`, { method: "GET" }, 35000);
     return { ok: true, data };
   } catch (err) {
-    return { ok: false, error: err.message };
+    // Retry once in case of cold-start wake-up
+    try {
+      const retryData = await apiFetch(`${API_BASE}/api/health`, { method: "GET" }, 25000);
+      return { ok: true, data: retryData };
+    } catch (_) {
+      return { ok: false, error: err.message };
+    }
   }
 }
 
@@ -123,7 +129,7 @@ export async function checkBackendHealth() {
  * Retrieves system info and capabilities at /api/info
  */
 export async function getApiInfo() {
-  return apiFetch(`${API_BASE}/api/info`, { method: "GET" }, 5000);
+  return apiFetch(`${API_BASE}/api/info`, { method: "GET" }, 15000);
 }
 
 /**
