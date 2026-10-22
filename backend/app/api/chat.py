@@ -175,29 +175,32 @@ async def chat(req: ChatRequest) -> ChatResponse:
     # Check if a specific location was mentioned in the user's message
     mentioned_loc = extract_location_from_message(req.message)
 
-    # If user mentioned a location or asked about weather, or app_window is missing, fetch fresh real weather
-    if mentioned_loc or asking_weather or not app_window or not getattr(app_window, "forecast_summary", None) or getattr(app_window, "current_temperature_c", None) is None:
+    # Fetch live weather ONLY if the user asked about weather/timing/spraying, mentioned a location, or provided an explicit location
+    should_fetch_weather = bool(mentioned_loc or asking_weather or (loc and not app_window))
+
+    if should_fetch_weather and (not app_window or not getattr(app_window, "forecast_summary", None)):
         target_loc = mentioned_loc or loc or (getattr(app_window, "location_name", None) if app_window else None) or "Pune, Maharashtra"
         try:
-            if mentioned_loc:
-                # Prefer geocoding with Maharashtra context
-                geo_info = await weather_service.geocode_location_info(f"{mentioned_loc}, Maharashtra")
-                if not geo_info:
-                    geo_info = await weather_service.geocode_location_info(mentioned_loc)
-                if geo_info:
-                    fresh_window = await run_weather_agent(
-                        latitude=geo_info["latitude"],
-                        longitude=geo_info["longitude"],
-                        location_name=geo_info.get("formatted_name", mentioned_loc),
-                        needs_application=True
-                    )
+            import asyncio
+            async with asyncio.timeout(3.5):
+                if mentioned_loc:
+                    geo_info = await weather_service.geocode_location_info(f"{mentioned_loc}, Maharashtra")
+                    if not geo_info:
+                        geo_info = await weather_service.geocode_location_info(mentioned_loc)
+                    if geo_info:
+                        fresh_window = await run_weather_agent(
+                            latitude=geo_info["latitude"],
+                            longitude=geo_info["longitude"],
+                            location_name=geo_info.get("formatted_name", mentioned_loc),
+                            needs_application=True
+                        )
+                    else:
+                        fresh_window = await run_weather_agent(location_name=target_loc, needs_application=True)
                 else:
                     fresh_window = await run_weather_agent(location_name=target_loc, needs_application=True)
-            else:
-                fresh_window = await run_weather_agent(location_name=target_loc, needs_application=True)
 
-            if fresh_window and fresh_window.is_available:
-                app_window = fresh_window
+                if fresh_window and fresh_window.is_available:
+                    app_window = fresh_window
         except Exception:
             pass
 

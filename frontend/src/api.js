@@ -377,7 +377,7 @@ export async function sendChatMessage(
         language,
       }),
     },
-    30000
+    60000
   );
 }
 

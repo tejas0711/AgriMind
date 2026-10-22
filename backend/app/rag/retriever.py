@@ -28,15 +28,85 @@ def _get_knowledge_chunks():
         return []
 
 
+# Common Marathi and Hindi agronomic keywords mapped to English knowledge base terms
+MULTILINGUAL_AGRI_MAP = {
+    # Crops
+    "पीक": ["crop", "crops", "cultivation", "varieties", "yield", "suitability"],
+    "पिके": ["crop", "crops", "cultivation", "varieties"],
+    "पिका": ["crop", "crops", "cultivation"],
+    "फसल": ["crop", "crops", "cultivation", "yield"],
+    "फसलें": ["crop", "crops", "cultivation"],
+    "कापूस": ["cotton", "black soil", "bollworm"],
+    "कपास": ["cotton", "black soil"],
+    "ऊस": ["sugarcane", "ratoon", "sugar"],
+    "गन्ना": ["sugarcane", "ratoon"],
+    "सोयाबीन": ["soybean", "rhizobium", "legume"],
+    "गहू": ["wheat", "rust", "rabi"],
+    "गेहूं": ["wheat", "rust", "rabi"],
+    "हरभरा": ["gram", "chickpea", "pulses"],
+    "चना": ["chickpea", "gram", "pulses"],
+    "मका": ["maize", "corn"],
+    "मक्का": ["maize", "corn"],
+    "कांदा": ["onion", "thrips"],
+    "प्याज": ["onion", "thrips"],
+    "टोमॅटो": ["tomato", "blight"],
+    "टमाटर": ["tomato", "blight"],
+    "भात": ["rice", "paddy"],
+    "धान": ["paddy", "rice"],
+    "तूर": ["pigeonpea", "arhar", "pulses"],
+    "अरहर": ["pigeonpea", "arhar", "pulses"],
+    # Season & Timing
+    "आता": ["season", "current", "sowing", "timing", "rabi", "kharif", "crop"],
+    "हंगाम": ["season", "kharif", "rabi", "summer"],
+    "खरीप": ["kharif", "monsoon", "crop"],
+    "रब्बी": ["rabi", "winter", "crop"],
+    "लागवड": ["sowing", "planting", "spacing"],
+    "पेरणी": ["sowing", "seed", "germination"],
+    "कापणी": ["harvest", "yield"],
+    # Soil & Nutrients
+    "माती": ["soil", "organic carbon", "ph", "texture"],
+    "जमीन": ["soil", "land", "drainage"],
+    "मृदा": ["soil", "testing"],
+    "मिट्टी": ["soil", "organic", "ph"],
+    "खत": ["fertilizer", "manure", "npk", "dose"],
+    "खते": ["fertilizer", "nutrients"],
+    "खाद": ["fertilizer", "manure", "compost"],
+    "युरिया": ["urea", "nitrogen", "top dressing"],
+    "डीएपी": ["dap", "phosphorus"],
+    "फॉस्फरस": ["phosphorus", "root"],
+    "पोटॅश": ["potash", "potassium"],
+    "सेंद्रिय": ["organic", "compost", "fym"],
+    # Water & Weather
+    "पाणी": ["water", "irrigation", "drainage"],
+    "सिंचन": ["irrigation", "drip"],
+    "सिंचाई": ["irrigation", "drip"],
+    "हवामान": ["weather", "temperature", "forecast"],
+    "मौसम": ["weather", "temperature", "climate"],
+    "तापमान": ["temperature", "heat"],
+    "पाऊस": ["rainfall", "rain", "precipitation"],
+    # Pests & Diseases
+    "रोग": ["disease", "fungal", "blight", "wilt"],
+    "कीड": ["pest", "insect", "infestation"],
+    "किटक": ["pest", "insects"],
+}
+
+
 def _keyword_retrieve(query_text: str, top_k: int = 4, category: Optional[str] = None) -> List[Evidence]:
-    """Instantaneous (<2ms) token-overlap retriever over authoritative knowledge chunks."""
+    """Instantaneous (<2ms) token-overlap retriever over authoritative knowledge chunks with multilingual support."""
     chunks = _get_knowledge_chunks()
     if not chunks or not query_text:
         return []
 
-    q_words = [w for w in re.findall(r"\w+", query_text.lower()) if len(w) > 2]
+    q_lower = query_text.lower()
+    q_words = [w for w in re.findall(r"\w+", q_lower) if len(w) > 2]
+
+    # Expand Devanagari / multilingual keywords to English domain tokens
+    for dev_term, eng_terms in MULTILINGUAL_AGRI_MAP.items():
+        if dev_term in query_text:
+            q_words.extend(eng_terms)
+
     if not q_words:
-        return []
+        q_words = ["crop", "soil", "fertilizer", "management"]
 
     scored = []
     for c in chunks:
@@ -50,8 +120,14 @@ def _keyword_retrieve(query_text: str, top_k: int = 4, category: Optional[str] =
 
     scored.sort(key=lambda x: x[0], reverse=True)
 
+    # If no specific matches, default to foundational agronomic chunks
+    selected_chunks = scored[:top_k]
+    if not selected_chunks:
+        filtered_chunks = [c for c in chunks if not category or c.category == category]
+        selected_chunks = [(0.50, c) for c in (filtered_chunks or chunks)[:top_k]]
+
     evidence: List[Evidence] = []
-    for score, c in scored[:top_k]:
+    for score, c in selected_chunks:
         evidence.append(
             Evidence(
                 text=c.text,
@@ -75,17 +151,15 @@ def retrieve(query_text: str, top_k: int = 4, category: Optional[str] = None) ->
 
     cleaned_query = query_text.strip()
 
-    # Fast in-memory retrieval by default (0.005s, 0MB overhead) to prevent cloud container timeouts
+    # Fast in-memory retrieval by default (0.002s, 0MB overhead) to prevent cloud container timeouts.
+    # NEVER import heavy ChromaDB / PyTorch on Render unless explicitly requested.
     if os.getenv("USE_CHROMA_EMBEDDINGS", "false").lower() != "true":
-        results = _keyword_retrieve(cleaned_query, top_k=top_k, category=category)
-        if results:
-            return results
+        return _keyword_retrieve(cleaned_query, top_k=top_k, category=category)
 
-    # Try ChromaDB dense retrieval if explicitly enabled or keyword found nothing
+    # Try ChromaDB dense retrieval only when USE_CHROMA_EMBEDDINGS=true
     try:
         from app.rag import vector_store
         from app.rag.embedding_service import embed_query
-        t0 = time.time()
         embedding = embed_query(cleaned_query)
         where = {"category": category} if category else None
         results = vector_store.query(embedding, top_k=top_k, where=where)
