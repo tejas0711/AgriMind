@@ -16,6 +16,8 @@ import httpx
 
 OPEN_METEO_BASE_URL = os.getenv("OPEN_METEO_BASE_URL", "https://api.open-meteo.com/v1/forecast")
 OPEN_METEO_GEOCODING_URL = os.getenv("OPEN_METEO_GEOCODING_URL", "https://geocoding-api.open-meteo.com/v1/search")
+OPEN_METEO_API_KEY = os.getenv("OPEN_METEO_API_KEY")
+WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY")
 
 DEFAULT_TIMEOUT_SECONDS = 4.0
 GEOCODING_TIMEOUT_SECONDS = 3.5
@@ -307,9 +309,15 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
         "timezone": "auto",
     }
 
+    forecast_url = OPEN_METEO_BASE_URL
+    if OPEN_METEO_API_KEY:
+        params["apikey"] = OPEN_METEO_API_KEY
+        if "api.open-meteo.com" in forecast_url:
+            forecast_url = "https://customer-api.open-meteo.com/v1/forecast"
+
     try:
         async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT_SECONDS) as client:
-            resp = await client.get(OPEN_METEO_BASE_URL, params=params, headers=HEADERS)
+            resp = await client.get(forecast_url, params=params, headers=HEADERS)
             resp.raise_for_status()
             data = resp.json()
     except httpx.TimeoutException as exc:
@@ -322,12 +330,19 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
         if cache_key in _FORECAST_CACHE:
             return _FORECAST_CACHE[cache_key][1]
         raise WeatherConnectionError(
-            f"Could not connect to weather provider at {OPEN_METEO_BASE_URL}: {exc}"
+            f"Could not connect to weather provider at {forecast_url}: {exc}"
         ) from exc
     except httpx.HTTPStatusError as exc:
         if cache_key in _FORECAST_CACHE:
             return _FORECAST_CACHE[cache_key][1]
         if exc.response.status_code == 429:
+            if WEATHERAPI_KEY:
+                try:
+                    wdata = await _get_forecast_weatherapi(latitude, longitude, forecast_days)
+                    _FORECAST_CACHE[cache_key] = (now_ts, wdata)
+                    return wdata
+                except Exception:
+                    pass
             raise WeatherServiceError(
                 "Open-Meteo rate limit reached on shared cloud IP. Application timing deferred to manual field observation."
             ) from exc
@@ -351,6 +366,63 @@ async def get_forecast(latitude: float, longitude: float, days: int = 5) -> Dict
     _FORECAST_CACHE[cache_key] = (now_ts, formatted)
     return formatted
 
+
+async def _get_forecast_weatherapi(latitude: float, longitude: float, days: int) -> Dict[str, Any]:
+    """Fallback weather provider using WeatherAPI.com (1,000,000 free monthly requests)."""
+    url = "https://api.weatherapi.com/v1/forecast.json"
+    params = {
+        "key": WEATHERAPI_KEY,
+        "q": f"{latitude},{longitude}",
+        "days": days,
+        "aqi": "no",
+        "alerts": "no",
+    }
+    async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT_SECONDS) as client:
+        resp = await client.get(url, params=params)
+        resp.raise_for_status()
+        data = resp.json()
+
+    curr = data.get("current", {})
+    forecast_list = data.get("forecast", {}).get("forecastday", [])
+
+    formatted_days = []
+    for fd in forecast_list:
+        d = fd.get("day", {})
+        rain_mm = d.get("totalprecip_mm", 0.0)
+        rain_prob = d.get("daily_chance_of_rain", 0)
+        w_max = d.get("maxwind_kph", 10.0)
+        t_max = d.get("maxtemp_c", 30.0)
+        t_min = d.get("mintemp_c", 20.0)
+        cond = d.get("condition", {}).get("text", "Clear")
+
+        is_safe = rain_mm < 8.0 and rain_prob < 50 and w_max < 30.0 and t_max < 40.0
+        formatted_days.append({
+            "date": fd.get("date"),
+            "temp_max_c": t_max,
+            "temp_min_c": t_min,
+            "precipitation_mm": rain_mm,
+            "precipitation_probability_pct": rain_prob,
+            "wind_max_kmh": w_max,
+            "weather_code": 0,
+            "condition": cond,
+            "is_safe": is_safe,
+        })
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    return {
+        "latitude": latitude,
+        "longitude": longitude,
+        "elevation": 0.0,
+        "timezone": data.get("location", {}).get("tz_id", "auto"),
+        "generated_at": now_iso,
+        "attribution": "Weather data by WeatherAPI.com",
+        "days": formatted_days,
+        "current_temperature_c": curr.get("temp_c"),
+        "current_condition": curr.get("condition", {}).get("text", "Clear"),
+        "current_wind_kmh": curr.get("wind_kph", 0.0),
+        "current_humidity": curr.get("humidity", 50),
+        "raw": data,
+    }
 
 
 def _format_forecast(data: Dict[str, Any], req_lat: float, req_lon: float) -> Dict[str, Any]:
